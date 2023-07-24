@@ -1,0 +1,65 @@
+snippet alexDebugMessage "Graphql Resovler Functions" b
+console.log('ALEX DEBUG:');
+console.log('${1:${VISUAL:message}}');
+endsnippet
+
+snippet pulumikubedeployment "Pulumi Kubernetes Deployment" b
+export const ${1:${VISUAL:service-name}}Deployment = new apps.v1.Deployment('${1}-deployment', {
+  metadata: {
+    name: '${1}',
+    namespace: ${2:${VISUAL:namespace}},
+    labels: {
+      app: '${1}',
+      version: '',
+      'managed-by': 'pulumi',
+    },
+  },
+  spec: {
+    replicas: 1,
+    selector: {
+      matchLabels: {
+        app: '${1}',
+      },
+    },
+    strategy: {
+      rollingUpdate: {
+        maxSurge: '25%',
+        maxUnavailable: '25%',
+      },
+      type: 'RollingUpdate',
+    },
+    template: {
+      metadata: {
+        labels: {
+          app: '${1}',
+          version: '1.2.4',
+          'managed-by': 'pulumi',
+        },
+      },
+      spec: {
+        ...generateNodeTolerations({app: '${1}'}, true),
+        containers: [
+          {
+            name: '${1}',
+            image: '${3:${VISUAL:image}}',
+            imagePullPolicy: 'IfNotPresent',
+            args: [],
+            ports: [],
+            resources: {
+              limits: {
+                memory: '200Mi',
+              },
+              requests: {
+                cpu: '200m',
+                memory: '200Mi',
+              },
+            },
+          },
+        ],
+      },
+    },
+  },
+}, {
+  provider: clusterProvider,
+});
+endsnippet
